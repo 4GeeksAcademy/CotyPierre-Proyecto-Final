@@ -3,6 +3,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 
+import {Catalogo} from "./pages/catalogo.jsx";
+import {Crear_catalogo} from "./pages/crear_catalogo.jsx";
+import {Modificar_catalogo} from "./pages/modificar_catalogo.jsx";
+
+import {Procedimientos} from "./pages/procedimientos.jsx";
+import {Crear_procedimientos} from "./pages/crear_procedimientos.jsx";
+import {Modificar_procedimientos} from "./pages/modificar_procedimientos.jsx";
+
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
@@ -25,6 +33,12 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
+                        <Route element={<Modificar_procedimientos />} path="/modificar_procedimientos" />
+                        <Route element={<Crear_procedimientos />} path="/crear_procedimientos" />
+                        <Route element={<Procedimientos />} path="/procedimientos" />
+                        <Route element={<Modificar_catalogo />} path="/modificar_catalogo" />
+                        <Route element={<Crear_catalogo />} path="/crear_catalogo" />
+                        <Route element={<Catalogo />} path="/catalogo" />
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
