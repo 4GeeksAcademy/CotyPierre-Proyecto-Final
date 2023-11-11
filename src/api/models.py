@@ -28,6 +28,7 @@ class Catalogo(db.Model):
       
     def serialize(self):
         return {
+            "id": self.id,
             "name": self.name,
             "image": self.image
         }
@@ -45,6 +46,7 @@ class Procedimientos(db.Model):
       
     def serialize(self):
         return {
+            "id": self.id,
             "name": self.name,
             "image": self.image,
             "descripcion": self.descripcion,

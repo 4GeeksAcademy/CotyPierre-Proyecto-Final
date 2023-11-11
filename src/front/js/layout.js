@@ -33,10 +33,10 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<Modificar_procedimientos />} path="/modificar_procedimientos" />
+                        <Route element={<Modificar_procedimientos />} path="/modificar_procedimientos/:theid" />
                         <Route element={<Crear_procedimientos />} path="/crear_procedimientos" />
                         <Route element={<Procedimientos />} path="/procedimientos" />
-                        <Route element={<Modificar_catalogo />} path="/modificar_catalogo" />
+                        <Route element={<Modificar_catalogo />} path="/modificar_catalogo/:theid" />
                         <Route element={<Crear_catalogo />} path="/crear_catalogo" />
                         <Route element={<Catalogo />} path="/catalogo" />
                         <Route element={<Home />} path="/" />

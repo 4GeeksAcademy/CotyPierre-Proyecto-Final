@@ -21,7 +21,7 @@ export const Crear_catalogo = () => {
     return (
         <div>
             <div className="card" style={{width: "18rem"}}>
-            <img src="..." className="card-img-top" alt="..."/>
+            <img src="https://th.bing.com/th/id/OIP.LyBR_M0nNjcEtVtg7vV80AHaE7?w=267&h=180&c=7&r=0&o=5&pid=1.7" className="card-img-top" alt="..."/>
                 <div className="card-body">
                 <form>
                 <div className="mb-3">
