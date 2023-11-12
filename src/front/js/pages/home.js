@@ -25,6 +25,15 @@ export const Home = () => {
 			<Link to="/catalogo">
 				<button>categorias</button>
       		</Link>
+			<Link to="/usuario">
+				<button>Usuario</button>
+      		</Link>
+			<Link to="/user_registration">
+				<button>Registro</button>
+      		</Link>
+			  <Link to="/user_login">
+				<button>Login</button>
+      		</Link>
 		</div>
 	);
 };

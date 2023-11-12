@@ -2,9 +2,13 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Catalogo, Procedimientos
+from api.models import db, User, Catalogo, Procedimientos, Usuario
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 
 api = Blueprint('api', __name__)
 
@@ -20,6 +24,101 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route("/register", methods=["POST"])
+def post_register():
+    body = request.json
+    user = User.query.filter_by(email = body['email']).first()
+    
+    if user:
+        return jsonify({"msg": "Usuario ya existe"}), 401
+    
+    new_user = User(
+        email=body['email'],
+        password=body["password"]
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+ 
+    return jsonify({"msg" : "Usuario creado"}) , 200
+
+@api.route("/login", methods=["POST"])
+def post_login():
+    name = request.json.get("name", None)
+    password = request.json.get("password", None)
+    
+    user = Usuario.query.filter_by(name=name, password=password).first()
+    if User is None:
+        return jsonify({"msg": "Bad username or password"}), 401
+ 
+    access_token = create_access_token(identity=user.id)
+    return jsonify({ "token": access_token, "user_id": user.id })
+
+
+@api.route('/usuario', methods=['GET'])
+def get_usuario():
+    all_usuario = Usuario.query.all()
+    Usuario_seriallize = list (map(lambda usuario: usuario.serialize(),all_usuario))
+
+    return jsonify(Usuario_seriallize), 200
+
+@api.route('/usuario/<int:id>', methods=['PUT'])
+def put_usuario(id):
+    usuario = Usuario.query.get(id)
+    body = request.json
+
+    if not usuario:
+        return jsonify({"message": "Usuario no encontrado"}), 404
+    
+    usuario.name = body["name"]
+    usuario.degree = body["degree"]
+    usuario.description = body["description"]
+    usuario.url_img = body["url_img"]
+    usuario.idu_img = body["idu_img"]
+    usuario.num_contact = body["num_contact"]
+    
+    db.session.commit()
+
+    return jsonify({"message": "Usuario modificado con éxito"}), 200
+
+@api.route('/usuario', methods=['POST'])
+def post_usuario():
+    body = request.json
+    usuario = Usuario.query.filter_by(name = body['name']).first()
+    
+    if usuario:
+        return jsonify({"msg": "Usuario ya existe"}), 401
+
+    new_usuario = Usuario(
+        id=body["id"],
+        name=body["name"],
+        password = body['password'],
+        degree=body["degree"],
+        description=body["description"],
+        url_img=body["url_img"],
+        idu_img=body["idu_img"],
+        num_contact=body["num_contact"]
+    )
+    db.session.add(new_usuario)
+    db.session.commit()
+
+    return jsonify({"message": "Usuario creado con éxito"}), 200
+
+@api.route('/usuario/<int:id>', methods=['DELETE'])
+def delete_usuario(id):
+
+    usuario = Usuario.query.get(id)
+
+    if not usuario:
+        return jsonify({"message": "Usuario no encontrado"}), 404
+
+    db.session.delete(usuario)
+    db.session.commit()
+    
+    return jsonify({"message": "Usuario eliminado con éxito"}), 200
+
+
 
 @api.route('/catalogo', methods=['GET'])
 def get_catalogo():

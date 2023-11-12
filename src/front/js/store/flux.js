@@ -1,6 +1,8 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+
+			usuario: [],
 			procedimientos: [],
 			catalogo: [],
 			message: null,
@@ -19,6 +21,85 @@ const getState = ({ getStore, getActions, setStore }) => {
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
+
+			postUser: (name,password) => {
+				fetch(process.env.BACKEND_URL + "api/login", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						name : name,
+						password: password
+					})
+				})
+				.then((response)=> {
+					if (response.status == 200){
+						setStore({ auth : true})
+					}
+					return response.json()
+				})
+				.then((data)=> {
+					localStorage.setItem("token",data.token);
+					localStorage.setItem("id",data.user_id);
+				})
+			},
+			postRegister: (email,password) => {
+				fetch(process.env.BACKEND_URL + "api/register", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						email : email,
+						password: password
+					})
+				})
+				.then((response)=> response.json())
+				.then((data)=> console.log(data))
+			},
+			
+		getUsuario: async() => {
+				const response = await fetch(process.env.BACKEND_URL + 'api/usuario')
+				const body = await response.json();
+				setStore({usuario: body})
+			},
+
+		postUsuario : (obj) => {
+			fetch(process.env.BACKEND_URL + 'api/usuario', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(obj)
+			})
+			.then((response)=> response.json())
+			.then((data)=> console.log(data))
+		},
+
+		putUsuario : (id,obj) => {
+			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(obj)
+			})
+			.then((response)=>response.json())
+			.then((data)=> console.log(data));
+		},
+
+		deleteUsuario : (id) => {
+			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+			.then((response) => response.json())
+			.then((data) => console.log(data))
+		},
+
 			getProcedimientos: async() => {
 				
 				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos')

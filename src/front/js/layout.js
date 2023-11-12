@@ -1,7 +1,15 @@
 import React from "react";
+//import injectContext from "./store/appContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
+
+import { Usuario } from "./pages/usuario.jsx";
+import { Crear_usuario } from "./pages/crear_usuario.jsx";
+import { Modificar_usuario } from "./pages/modificar_usuario.jsx";
+
+import { User_registration } from "./pages/user_registration.jsx";
+import { User_login } from "./pages/user_login.jsx";
 
 import {Catalogo} from "./pages/catalogo.jsx";
 import {Crear_catalogo} from "./pages/crear_catalogo.jsx";
@@ -33,6 +41,11 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
+                        <Route element={<User_registration />} path="/user_registration" />
+                        <Route element={<User_login />} path="/user_login" />
+                        <Route element={<Usuario />} path="/usuario" />
+                        <Route element={<Crear_usuario />} path="/crear_usuario" />
+                        <Route element={<Modificar_usuario />} path="/modificar_usuario/:theid" />
                         <Route element={<Modificar_procedimientos />} path="/modificar_procedimientos/:theid" />
                         <Route element={<Crear_procedimientos />} path="/crear_procedimientos" />
                         <Route element={<Procedimientos />} path="/procedimientos" />
