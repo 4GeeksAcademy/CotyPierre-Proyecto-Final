@@ -53,3 +53,5 @@ class Procedimientos(db.Model):
             "articulos": self.articulos,
             "video": self.video,
         }
+    
+#test
