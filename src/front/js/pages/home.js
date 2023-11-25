@@ -8,32 +8,31 @@ export const Home = () => {
 	const { store, actions } = useContext(Context);
 
 	return (
-		<div className="text-center mt-5">
-			{/* <h1>Hello Rigo!!</h1>
-			<p>
-				<img src={rigoImageUrl} />
-			</p>
-			<div className="alert alert-info">
-				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
-			</div>
-			<p>
-				This boilerplate comes with lots of documentation:{" "}
-				<a href="https://start.4geeksacademy.com/starters/react-flask">
-					Read documentation
-				</a>
-			</p> */}
-			<Link to="/catalogo">
-				<button>categorias</button>
-      		</Link>
-			<Link to="/usuario">
-				<button>Usuario</button>
-      		</Link>
-			<Link to="/user_registration">
-				<button>Registro</button>
-      		</Link>
-			  <Link to="/user_login">
-				<button>Login</button>
-      		</Link>
+		<div className="container d-flex gap-3 flex-wrap justify-content-center py-2">
+			<Link to={"/subcatalogo/cirugia"} className="card p-0 m-0 d-flex flex-column justify-content-between" style={{ width: '18rem' }}>
+				<img className="card-img-top" src="https://cnnespanol.cnn.com/wp-content/uploads/2023/01/230110214153-ranking-operaciones-pba-full-169.jpeg?quality=100&strip=info" alt="Card image cap" />
+				<div className="card-body d-flex align-items-end justify-content-center text-center">
+					<h4 className="card-title">Cirugías</h4>
+				</div>
+			</Link>
+			<Link to={"/subcatalogo/curaciones"} className="card p-0 m-0" style={{ width: '18rem' }}>
+				<img className="card-img-top" src="https://www.totalcare.com.co/fotospages/mac_curacion_de_heridas_1556920290.png" alt="Card image cap" />
+				<div className="card-body d-flex align-items-end justify-content-center text-center">
+					<h4 className="card-title">Curaciones</h4>
+				</div>
+			</Link>
+			<Link to={"/subcatalogo/procedimientos"} className="card p-0 m-0" style={{ width: '18rem' }}>
+				<img className="card-img-top" src="https://statics-diariomedico.uecdn.es/cms/styles/landscape_xl/azblob/2017/11/24/la-consulta-1.jpg.webp?itok=PD4EMzja" alt="Card image cap" />
+				<div className="card-body d-flex align-items-end justify-content-center text-center">
+					<h4 className="card-title">Procedimientos invasivos</h4>
+				</div>
+			</Link>
+			<Link to={"/subcatalogo/varios"} className="card p-0 m-0" style={{ width: '18rem' }}>
+				<img className="card-img-top" src="https://cardiohealth.com.mx/wp-content/uploads/2018/02/img-gallery-20.jpg" alt="Card image cap" />
+				<div className="card-body d-flex align-items-end justify-content-center text-center">
+					<h4 className="card-title">Categorías varios</h4>
+				</div>
+			</Link>
 		</div>
 	);
 };

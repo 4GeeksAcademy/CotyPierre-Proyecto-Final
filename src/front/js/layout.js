@@ -20,6 +20,8 @@ import {Crear_procedimientos} from "./pages/crear_procedimientos.jsx";
 import {Modificar_procedimientos} from "./pages/modificar_procedimientos.jsx";
 
 import { Home } from "./pages/home";
+import { SubCatalogo } from "./pages/sub_catalogos.jsx";
+
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import injectContext from "./store/appContext";
@@ -55,7 +57,7 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route element={<SubCatalogo />} path="/subcatalogo/:option" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
