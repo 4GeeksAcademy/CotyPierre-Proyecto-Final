@@ -5,3 +5,8 @@
     one more css for each page that will contain the selected used 
     on that page only (the ones not reused in other pages).
 */
+.card:hover {
+    border: 2px solid #6299ff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+  
