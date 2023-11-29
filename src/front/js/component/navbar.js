@@ -21,7 +21,7 @@ export const Navbar = () => {
 						<a className="nav-link" href="#">Contactos</a>
 					</li>
 					<li className="nav-item">
-						<a className="nav-link" href="#">Login</a>
+						<Link className="nav-link" to={"/user_login"}>Login</Link>
 					</li>
 				</ul>
 			</div>

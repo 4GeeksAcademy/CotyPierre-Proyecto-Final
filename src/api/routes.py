@@ -13,7 +13,7 @@ from flask_jwt_extended import JWTManager
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api)
+CORS(api, resources={r"/*": {"origins": "*"}})
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -28,30 +28,43 @@ def handle_hello():
 @api.route("/register", methods=["POST"])
 def post_register():
     body = request.json
-    user = User.query.filter_by(email = body['email']).first()
+    user = User.query.filter_by(email=body['email']).first()
+
+    print(body)
     
     if user:
         return jsonify({"msg": "Usuario ya existe"}), 401
     
     new_user = User(
         email=body['email'],
-        password=body["password"]
+        password=body["password"],
+        name=body.get('name'),
+        phone=body.get('phone'),
+        adress=body.get('adress'),
+        country=body.get('country'),
+        department=body.get('department'),
+        photo=body.get('photo'),
+        rol=body.get('rol'),
+        professional_grade=body.get('professionalGrade'),
+        workplace=body.get('workplace')
     )
 
     db.session.add(new_user)
     db.session.commit()
  
-    return jsonify({"msg" : "Usuario creado"}) , 200
+    return jsonify({"msg": "Usuario creado"}), 200
+
 
 @api.route("/login", methods=["POST"])
 def post_login():
-    name = request.json.get("name", None)
+    email = request.json.get("email", None)
     password = request.json.get("password", None)
-    
-    user = Usuario.query.filter_by(name=name, password=password).first()
-    if User is None:
+
+    user = User.query.filter_by(email=email, password=password).first()
+
+    if user is None:
         return jsonify({"msg": "Bad username or password"}), 401
- 
+
     access_token = create_access_token(identity=user.id)
     return jsonify({ "token": access_token, "user_id": user.id })
 

@@ -22,30 +22,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 		actions: {
 			// Use getActions to call a function within a fuction
 
-			postUser: (name,password) => {
+			postUser: (email,password) => {
 				fetch(process.env.BACKEND_URL + "api/login", {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						name : name,
-						password: password
-					})
-				})
-				.then((response)=> {
-					if (response.status == 200){
-						setStore({ auth : true})
-					}
-					return response.json()
-				})
-				.then((data)=> {
-					localStorage.setItem("token",data.token);
-					localStorage.setItem("id",data.user_id);
-				})
-			},
-			postRegister: (email,password) => {
-				fetch(process.env.BACKEND_URL + "api/register", {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
@@ -55,9 +33,64 @@ const getState = ({ getStore, getActions, setStore }) => {
 						password: password
 					})
 				})
+				.then((response)=> {
+					if (response.status == 200){
+						setStore({ auth : true})
+						return response.json()
+					}
+
+					if (response.status == 401){
+						alert("Credenciales incorrectas");
+						return;
+					}
+
+				})
+				.then((data)=> {
+					localStorage.setItem("token",data.token);
+					localStorage.setItem("id",data.user_id);
+				}).catch(err => {
+					console.log(err);
+				})
+			},
+			postRegister: (
+				name,
+				phone,
+				address,
+				country,
+				department,
+				photo,
+				rol,
+				professionalGrade,
+				workplace,
+				email,
+				password
+			  ) => {
+				const requestBody = {
+				  name: name,
+				  phone: phone,
+				  address: address,
+				  country: country,
+				  department: department,
+				  photo: photo,
+				  rol: rol,
+				  professionalGrade: professionalGrade,
+				  workplace: workplace,
+				  email: email,
+				  password: password
+				};
+
+				console.log(requestBody);
+			  
+				fetch(process.env.BACKEND_URL + "api/register", {
+				  method: 'POST',
+				  headers: {
+					'Content-Type': 'application/json'
+				  },
+				  body: JSON.stringify(requestBody)
+				})
 				.then((response)=> response.json())
 				.then((data)=> console.log(data))
-			},
+			  },		  
 			
 		getUsuario: async() => {
 				const response = await fetch(process.env.BACKEND_URL + 'api/usuario')
