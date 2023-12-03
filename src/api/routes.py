@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+import base64
 
 api = Blueprint('api', __name__)
 
@@ -29,12 +30,16 @@ def handle_hello():
 def post_register():
     body = request.json
     user = User.query.filter_by(email=body['email']).first()
-
-    print(body)
     
     if user:
         return jsonify({"msg": "Usuario ya existe"}), 401
-    
+
+    if 'photo' in body: 
+        try:
+            photo_data = base64.b64decode(body['photo'])
+        except:
+            return jsonify({"msg": "Imagen inválida, intente nuevamente"}), 500
+
     new_user = User(
         email=body['email'],
         password=body["password"],
@@ -43,7 +48,7 @@ def post_register():
         adress=body.get('address'),
         country=body.get('country'),
         department=body.get('department'),
-        photo=body.get('photo'),
+        photo=photo_data,
         rol=body.get('rol'),
         professional_grade=body.get('professionalGrade'),
         workplace=body.get('workplace'),

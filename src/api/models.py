@@ -5,7 +5,7 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=False, nullable=False)
-    phone = db.Column(db.Integer, unique=True, nullable=False)
+    phone = db.Column(db.String(15), unique=True, nullable=False)
     adress = db.Column(db.String(120), unique=False, nullable=False)
     country = db.Column(db.String(50), unique=False, nullable=False)
     department = db.Column(db.String(50), unique=False, nullable=False)
