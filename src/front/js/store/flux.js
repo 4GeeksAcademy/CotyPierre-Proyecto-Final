@@ -89,7 +89,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  body: JSON.stringify(requestBody)
 				})
 				.then((response)=> response.json())
-				.then((data)=> console.log(data))
+				.then((data)=> {
+					if(data.msg == "Usuario creado"){
+						alert("Usuario creado");
+						window.location.href = "/user_login"
+					}else{
+						alert(`Error al crear el usuario ${email}`);
+					}
+				})
 			  },		  
 			
 		getUsuario: async() => {

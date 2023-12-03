@@ -10,7 +10,7 @@ class User(db.Model):
     country = db.Column(db.String(50), unique=False, nullable=False)
     department = db.Column(db.String(50), unique=False, nullable=False)
     photo = db.Column(db.LargeBinary, unique=False, nullable=True)
-    rol = db.Column(db.String(10), unique=False, nullable=False)
+    rol = db.Column(db.String(13), unique=False, nullable=False)
     professional_grade = db.Column(db.String(30), unique=False, nullable=False)
     workplace = db.Column(db.String(50), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)

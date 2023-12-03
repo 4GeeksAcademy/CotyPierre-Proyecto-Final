@@ -40,13 +40,14 @@ def post_register():
         password=body["password"],
         name=body.get('name'),
         phone=body.get('phone'),
-        adress=body.get('adress'),
+        adress=body.get('address'),
         country=body.get('country'),
         department=body.get('department'),
         photo=body.get('photo'),
         rol=body.get('rol'),
         professional_grade=body.get('professionalGrade'),
-        workplace=body.get('workplace')
+        workplace=body.get('workplace'),
+        is_active=True
     )
 
     db.session.add(new_user)
