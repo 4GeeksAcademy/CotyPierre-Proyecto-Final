@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			auth: false,
 			rol: "",
+			token: "",
 			usuario: [],
 			procedimientos: [],
 			catalogo: [],
@@ -23,8 +24,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			]
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-
 			postUser: (email,password) => {
 				fetch(process.env.BACKEND_URL + "api/login", {
 					method: 'POST',
@@ -39,14 +38,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.then(async(response)=> {
 					if (response.status == 200){						
 						const res = await response.json();
-						console.log(res);
-
 						const decoded = jwtDecode(res.token);
-
-						setStore({ auth : true, rol: decoded.rol})
-						const store = getStore();
-						console.log(store);
-
+						setStore({ auth : true, rol: decoded.rol, token: res.token})
 						return res;
 					}
 
@@ -108,11 +101,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				})
 			  },		  
 			
-		getUsuario: async() => {
-				const response = await fetch(process.env.BACKEND_URL + 'api/usuario')
-				const body = await response.json();
-				setStore({usuario: body})
-			},
+			  getUsuario: async () => {
+				const store = getStore();
+				const token = store.token;
+				const requestOptions = {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					}
+				};
+			
+				try {
+					const response = await fetch(process.env.BACKEND_URL + 'api/usuario', requestOptions);
+					if (!response.ok) {
+						throw new Error('Error al obtener los usuarios');
+					}
+					const body = await response.json();
+					console.log(body);
+					setStore({ usuario: body });
+				} catch (error) {
+					console.error(error);
+				}
+			},			
 
 		postUsuario : (obj) => {
 			fetch(process.env.BACKEND_URL + 'api/usuario', {

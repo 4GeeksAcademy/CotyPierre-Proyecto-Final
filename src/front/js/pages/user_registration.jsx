@@ -115,8 +115,10 @@ export const User_registration = () => {
                         <input maxLength="80" type="password" className="form-control" id="inputName1" value={confirmPass} onChange={(e) => setConfirmPass(e.target.value)} required />
                     </div>
                     <div className="my-3 col-12 d-flex justify-content-center">
+                        {store.rol != "Administrador" && (
                             <Link className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" to={"/user_login"}>¿Tiene una cuenta? Inicie sesión aquí</Link>
-                        </div>
+                        )}
+                    </div>
                     <div className="col-12 d-flex justify-content-center w-100">
                         <button type="submit" className="btn btn-primary">Continuar</button>
                     </div>

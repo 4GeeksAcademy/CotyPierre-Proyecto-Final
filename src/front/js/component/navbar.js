@@ -36,7 +36,7 @@ export const Navbar = () => {
 					)}
 					{store.rol === "Administrador" && (
 						<li className="nav-item">
-							<Link className="nav-link" to={"/user_login"}>Gestionar Usuarios</Link>
+							<Link className="nav-link" to={"/usuario"}>Gestionar Usuarios</Link>
 						</li>
 					)}
 				</ul>

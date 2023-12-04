@@ -11,25 +11,48 @@ export const Usuario = () => {
 
   return (
     <>
-    { store.auth == false ? <Navigate to="/"/> :
-      <div className="container">
-        <ul>
-          {store.usuario.map((item) => (
-            <li key={item.id}>
-              <b> {item.id} {item.name} {item.url_img}  </b>
-              
-              <Link to={`/modificar_usuario/${item.id}`}>
-                <button>Modificar</button>
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <Link to="/crear_usuario">
-          <button>Crear</button>
-        </Link>
-      </div>
-    }
+      {store.auth === false ? (
+        <Navigate to="/" />
+      ) : (
+        <div className="container">
+          <Link to="/crear_usuario">
+            <button>Crear</button>
+          </Link>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Photo</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {store.usuario.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
+                  <td>{item.name}</td>
+                  <td>
+                    {item.photo && ( // Check if photo exists
+                      <img
+                        src={`${item.photo}`} // Assuming the photo is in base64 format
+                        alt="User"
+                        style={{ width: '50px', height: 'auto' }}
+                      />
+                    )}
+                  </td>
+                  <td>
+                    <Link to={`/modificar_usuario/${item.id}`}>
+                      <button>Modificar</button>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
+
 };

@@ -34,12 +34,6 @@ def post_register():
     if user:
         return jsonify({"msg": "Usuario ya existe"}), 401
 
-    if 'photo' in body: 
-        try:
-            photo_data = base64.b64decode(body['photo'])
-        except:
-            return jsonify({"msg": "Imagen inválida, intente nuevamente"}), 500
-
     new_user = User(
         email=body['email'],
         password=body["password"],
@@ -48,7 +42,7 @@ def post_register():
         adress=body.get('address'),
         country=body.get('country'),
         department=body.get('department'),
-        photo=photo_data,
+        photo=body['photo'],
         rol=body.get('rol'),
         professional_grade=body.get('professionalGrade'),
         workplace=body.get('workplace'),
@@ -76,9 +70,11 @@ def post_login():
 
 
 @api.route('/usuario', methods=['GET'])
+@jwt_required()
 def get_usuario():
-    all_usuario = Usuario.query.all()
-    Usuario_seriallize = list (map(lambda usuario: usuario.serialize(),all_usuario))
+    all_usuario = User.query.all()
+    print(all_usuario)
+    Usuario_seriallize = list (map(lambda user: user.serialize(),all_usuario))
 
     return jsonify(Usuario_seriallize), 200
 

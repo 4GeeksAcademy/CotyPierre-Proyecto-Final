@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import base64
 
 db = SQLAlchemy()
 
@@ -9,7 +10,7 @@ class User(db.Model):
     adress = db.Column(db.String(120), unique=False, nullable=False)
     country = db.Column(db.String(50), unique=False, nullable=False)
     department = db.Column(db.String(50), unique=False, nullable=False)
-    photo = db.Column(db.LargeBinary, unique=False, nullable=True)
+    photo = db.Column(db.Text, unique=False, nullable=True)
     rol = db.Column(db.String(13), unique=False, nullable=False)
     professional_grade = db.Column(db.String(30), unique=False, nullable=False)
     workplace = db.Column(db.String(50), unique=False, nullable=False)
@@ -22,11 +23,23 @@ class User(db.Model):
         return f'<User {self.email}>'
 
     def serialize(self):
-        return {
+        serialized_data = {
             "id": self.id,
+            "name": self.name,
+            "phone": self.phone,
+            "adress": self.adress,
+            "country": self.country,
+            "department": self.department,
+            "rol": self.rol,
+            "photo": self.photo,
+            "professional_grade": self.professional_grade,
+            "workplace": self.workplace,
             "email": self.email,
-         
+            "is_active": self.is_active
         }
+
+        return serialized_data
+
     
 class Usuario (db.Model):
     __tablename__ = 'usuario'
