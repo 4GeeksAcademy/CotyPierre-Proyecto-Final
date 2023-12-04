@@ -7,7 +7,13 @@ export const Navbar = () => {
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-primary px-2">
-			<Link to={"/"} className="navbar-brand">Gestor de procedimientos</Link>
+			{store.rol != "" && (
+				<Link to={"/"} className="navbar-brand">{store.rol}</Link>
+			)}
+			{store.rol === "" && (
+				<Link to={"/"} className="navbar-brand">Publicación de Procedimientos</Link>
+			)}
+
 			<a className="navbar-brand" href="#"></a>
 			<button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
 				<span className="navbar-toggler-icon"></span>
@@ -23,6 +29,16 @@ export const Navbar = () => {
 					<li className="nav-item">
 						<Link className="nav-link" to={"/user_login"}>Login</Link>
 					</li>
+					{store.rol === "Administrador" && (
+						<li className="nav-item">
+							<Link className="nav-link" to={"/user_login"}>Gestionar Procedimientos</Link>
+						</li>
+					)}
+					{store.rol === "Administrador" && (
+						<li className="nav-item">
+							<Link className="nav-link" to={"/user_login"}>Gestionar Usuarios</Link>
+						</li>
+					)}
 				</ul>
 			</div>
 		</nav>

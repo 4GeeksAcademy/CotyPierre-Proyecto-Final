@@ -1,7 +1,10 @@
+import { jwtDecode } from "jwt-decode";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-
+			auth: false,
+			rol: "",
 			usuario: [],
 			procedimientos: [],
 			catalogo: [],
@@ -33,10 +36,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 						password: password
 					})
 				})
-				.then((response)=> {
-					if (response.status == 200){
-						setStore({ auth : true})
-						return response.json()
+				.then(async(response)=> {
+					if (response.status == 200){						
+						const res = await response.json();
+						console.log(res);
+
+						const decoded = jwtDecode(res.token);
+
+						setStore({ auth : true, rol: decoded.rol})
+						const store = getStore();
+						console.log(store);
+
+						return res;
 					}
 
 					if (response.status == 401){
@@ -78,8 +89,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  email: email,
 				  password: password
 				};
-
-				console.log(requestBody);
 			  
 				fetch(process.env.BACKEND_URL + "api/register", {
 				  method: 'POST',
