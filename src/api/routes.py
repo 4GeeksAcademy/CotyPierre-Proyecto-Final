@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from sqlalchemy.exc import IntegrityError
 from api.models import db, User, Catalogo, Procedimientos, Usuario
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -49,8 +50,14 @@ def post_register():
         is_active=True
     )
 
-    db.session.add(new_user)
-    db.session.commit()
+    try: 
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"msg": "Usuario creado"}), 200  
+    except IntegrityError as e:
+        db.session.rollback() 
+        return jsonify({"msg": "Error: Violación de unicidad en la base de datos"}), 500
+
  
     return jsonify({"msg": "Usuario creado"}), 200
 
@@ -80,18 +87,21 @@ def get_usuario():
 
 @api.route('/usuario/<int:id>', methods=['PUT'])
 def put_usuario(id):
-    usuario = Usuario.query.get(id)
+    usuario = User.query.get(id)
     body = request.json
 
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
     
-    usuario.name = body["name"]
-    usuario.degree = body["degree"]
-    usuario.description = body["description"]
-    usuario.url_img = body["url_img"]
-    usuario.idu_img = body["idu_img"]
-    usuario.num_contact = body["num_contact"]
+    usuario.name = body.get('name')
+    usuario.phone = body.get('phone')
+    usuario.adress = body.get('adress')
+    usuario.country = body.get('country')
+    usuario.department = body.get('department')
+    usuario.photo = body['photo']
+    usuario.professional_grade = body.get('professional_grade')
+    usuario.workplace = body.get('workplace')
+    usuario.is_active = body.get('is_active')
     
     db.session.commit()
 
@@ -123,7 +133,7 @@ def post_usuario():
 @api.route('/usuario/<int:id>', methods=['DELETE'])
 def delete_usuario(id):
 
-    usuario = Usuario.query.get(id)
+    usuario = User.query.get(id)
 
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404

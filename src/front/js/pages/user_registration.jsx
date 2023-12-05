@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 export const User_registration = () => {
     const { store, actions } = useContext(Context);
@@ -17,6 +18,8 @@ export const User_registration = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
+
+    const navigate = useNavigate();
 
     const handleImageUpload = (e) => {
         const selectedImage = e.target.files[0];
@@ -36,15 +39,22 @@ export const User_registration = () => {
         }
     }
 
-    const createAccount = (e) => {
+    const createAccount = async (e) => {
         e.preventDefault();
         if (password != confirmPass) {
             alert("Las contraseñas no coinciden");
             return;
         }
 
-        actions.postRegister(name, phone, adress, country, department, photo, rol, professionalGrade,
-            workplace, email, password)
+        const res = await actions.postRegister(name, phone, adress, country, department, photo, rol, professionalGrade,
+            workplace, email, password);
+        if (res && store.rol == "Administrador") {
+            navigate('/usuario');
+        } else if (res && store.rol != "Administrador") {
+            navigate('/user_login');
+        } else {
+            alert("Error: Violación de unicidad en la base de datos");
+        }
     }
 
     return (
@@ -56,7 +66,7 @@ export const User_registration = () => {
                 <div className="col-md-8 p-3 h-100 row">
                     <div className="mb-3 col-md-6 col-sm-12">
                         <label htmlFor="inputName1" className="form-label">Nombre</label>
-                        <input required maxLength="30" type="text" className="form-control" id="inputName1" value={name} onChange={(e) => setName(e.target.value)} required />
+                        <input maxLength="30" type="text" className="form-control" id="inputName1" value={name} onChange={(e) => setName(e.target.value)} required />
                     </div>
                     <div className="mb-3 col-md-6 col-sm-12">
                         <label htmlFor="inputName1" className="form-label">Teléfono</label>
@@ -90,7 +100,9 @@ export const User_registration = () => {
                                 Seleccione un rol
                             </option>
                             <option value={"Enfermero"}>Enfermero</option>
-                            <option value={"Administrador"}>Administrador</option>
+                            {store.rol === "Administrador" && (
+                                <option value={"Administrador"}>Administrador</option>
+                            )}
                         </select>
 
                     </div>

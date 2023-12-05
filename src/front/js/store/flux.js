@@ -56,7 +56,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log(err);
 				})
 			},
-			postRegister: (
+			postRegister: async (
 				name,
 				phone,
 				address,
@@ -83,22 +83,21 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  password: password
 				};
 			  
-				fetch(process.env.BACKEND_URL + "api/register", {
+				const response = await fetch(process.env.BACKEND_URL + "api/register", {
 				  method: 'POST',
 				  headers: {
 					'Content-Type': 'application/json'
 				  },
 				  body: JSON.stringify(requestBody)
 				})
-				.then((response)=> response.json())
-				.then((data)=> {
-					if(data.msg == "Usuario creado"){
-						alert("Usuario creado");
-						window.location.href = "/user_login"
-					}else{
-						alert(`Error al crear el usuario ${email}`);
-					}
-				})
+
+				if(response.status == 500){
+					const body = await response.json();
+					return body.msg;
+				}
+
+				const body = await response.json();
+				return body.msg == "Usuario creado";
 			  },		  
 			
 			  getUsuario: async () => {
@@ -137,27 +136,41 @@ const getState = ({ getStore, getActions, setStore }) => {
 			.then((data)=> console.log(data))
 		},
 
-		putUsuario : (id,obj) => {
-			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
+		putUsuario : async (id,obj) => {
+			const response = await fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(obj)
 			})
-			.then((response)=>response.json())
-			.then((data)=> console.log(data));
+
+			if(response.status != 200){
+				return 1;
+			}
+
+			const body = await response.json();
+			return body;
 		},
 
-		deleteUsuario : (id) => {
-			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
+		deleteUsuario : async (id) => {
+			const store = getStore();
+			const decoded = jwtDecode(store.token);
+
+			if(decoded.sub != id){
+				const response = await fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				})
+				const body = await response.json();
+				return body.message == "Usuario eliminado con éxito";
+			}else{
+				return false;
+			}
+
+
 		},
 
 			getProcedimientos: async() => {
