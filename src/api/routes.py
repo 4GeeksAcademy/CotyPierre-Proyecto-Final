@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, send_file, make_response, Blueprint
 from sqlalchemy.exc import IntegrityError
 from api.models import db, User, Catalogo, Procedimientos, Usuario
 from api.utils import generate_sitemap, APIException
@@ -10,6 +10,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+import io
 import base64
 
 api = Blueprint('api', __name__)
@@ -203,13 +204,40 @@ def get_procedimientos():
 
 @api.route('/procedimientos', methods=['POST'])
 def post_procedimientos():
+    body = request.form
+    print(body)
 
-    body = request.json
-    new_procedimientos = Procedimientos(name=body['name'],image=body["image"],descripcion=body["descripcion"],articulos=body["articulos"],video=body["video"],)
+    new_procedimientos = Procedimientos(
+        name=body['name'],
+        photo=body["photo"],
+        descripcion=body["descripcion"],
+        video=body["video"],
+        link=body["enlace"],
+        is_active=True
+    )
+
+    if 'archivo' in request.files:
+        archivo = request.files['archivo']
+        
+        if archivo:
+            new_procedimientos.archive = archivo.read()
+
     db.session.add(new_procedimientos)
     db.session.commit()
 
     return jsonify({"message": "Procedimiento creado con éxito"}), 200
+
+@api.route('/procedimientos/<int:procedimiento_id>/descargar', methods=['GET'])
+def descargar_archivo(procedimiento_id):
+    procedimiento = Procedimientos.query.get(procedimiento_id)
+    if procedimiento and procedimiento.archive:
+        archivo = io.BytesIO(procedimiento.archive)
+        response = make_response(archivo.getvalue())
+        response.headers['Content-Type'] = 'application/octet-stream'
+        response.headers['Content-Disposition'] = f'attachment; filename={procedimiento.name}.pdf'
+        return response
+    return jsonify({"message": "Procedimiento o archivo no encontrado"}), 404
+
 
 @api.route('/procedimientos/<int:id>', methods=['PUT'])
 def put_procedimientos(id):
@@ -221,12 +249,12 @@ def put_procedimientos(id):
     
     if "name" in body:
         procedimientos.name = body['name']
-    if "image" in body:
-        procedimientos.image = body['image']
+    if "photo" in body:
+        procedimientos.photo = body['photo']
     if "descripcion" in body:
         procedimientos.descripcion = body['descripcion']
-    if "articulos" in body:
-        procedimientos.articulos = body['articulos']
+    if "enlace" in body:
+        procedimientos.link = body['enlace']
     if "video" in body:
         procedimientos.video = body['video']
     
@@ -237,7 +265,7 @@ def put_procedimientos(id):
 @api.route('/procedimientos/<int:id>', methods=['DELETE'])
 def delete_procedimientos(id):
 
-    procedimientos = procedimientos.query.get(id)
+    procedimientos = Procedimientos.query.get(id)
 
     if not procedimientos:
         return jsonify({"message": "Procedimientos no encontrado"}), 404

@@ -84,23 +84,29 @@ class Catalogo(db.Model):
     
 class Procedimientos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image = db.Column(db.String)
+    photo = db.Column(db.Text, unique=False, nullable=True)
     name = db.Column(db.String(80), unique=False, nullable=False)
     descripcion = db.Column(db.String(500), unique=False, nullable=False)
-    articulos = db.Column(db.String(80), unique=False, nullable=False)
-    video = db.Column(db.String)
+    video = db.Column(db.Text, unique=False, nullable=True)
+    link = db.Column(db.Text, unique=False, nullable=True)
+    archive = db.Column(db.LargeBinary, unique=False, nullable=True)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     
     def __repr__(self):
         return f'<Procedimientos {self.name}>'
       
     def serialize(self):
-        return {
+        serialized_data = {
             "id": self.id,
+            "photo": self.photo,
             "name": self.name,
-            "image": self.image,
             "descripcion": self.descripcion,
-            "articulos": self.articulos,
             "video": self.video,
+            "link": self.link,
+            "is_active": self.is_active
         }
-    
-#test
+
+        if self.archive:
+            serialized_data['archive'] = True
+
+        return serialized_data

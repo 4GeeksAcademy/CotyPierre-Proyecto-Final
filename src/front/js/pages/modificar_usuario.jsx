@@ -60,7 +60,7 @@ export const Modificar_usuario = () => {
 
         const res = await actions.putUsuario(theid, objeto);
         console.log(res);
-        debugger;
+        ;
     }
 
     return (
