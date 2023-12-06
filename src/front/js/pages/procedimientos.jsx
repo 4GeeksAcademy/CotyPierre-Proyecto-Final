@@ -45,6 +45,8 @@ export const Procedimientos = () => {
               <tr>
                 <th>Imagen</th>
                 <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Subcategoría</th>
                 <th>Descripción</th>
                 <th>Video</th>
                 <th>Acciones</th>
@@ -57,6 +59,8 @@ export const Procedimientos = () => {
                     <img src={item.photo} style={{height:'100px', width:'auto'}} alt="N/A" />
                   </td>
                   <td className="align-middle">{item.name}</td>
+                  <td className="align-middle">{item.category}</td>
+                  <td className="align-middle">{item.subCategory}</td>
                   <td className="align-middle">{item.descripcion}</td>
                   <td className="align-middle">{item.video}</td>
                   <td className="align-middle">

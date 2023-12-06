@@ -213,7 +213,10 @@ def post_procedimientos():
         descripcion=body["descripcion"],
         video=body["video"],
         link=body["enlace"],
-        is_active=True
+        is_active=True,
+        category=body["category"],
+        subCategory=body["subCategory"],
+        idUser=body["idUser"]
     )
 
     if 'archivo' in request.files:
@@ -257,6 +260,10 @@ def put_procedimientos(id):
         procedimientos.link = body['enlace']
     if "video" in body:
         procedimientos.video = body['video']
+    if "category" in body:
+        procedimientos.category = body['category']
+    if "subCategory" in body:
+        procedimientos.subCategory = body['subCategory']
     
     db.session.commit()
 

@@ -18,6 +18,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
    
+    procedimientos = db.relationship('Procedimientos', back_populates='usuario')  # Cambio aquí
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -40,7 +41,42 @@ class User(db.Model):
 
         return serialized_data
 
-    
+class Procedimientos(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    photo = db.Column(db.Text, unique=False, nullable=True)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    descripcion = db.Column(db.String(500), unique=False, nullable=False)
+    video = db.Column(db.Text, unique=False, nullable=True)
+    link = db.Column(db.Text, unique=False, nullable=True)
+    archive = db.Column(db.LargeBinary, unique=False, nullable=True)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    category = db.Column(db.String(50), unique=False, nullable=False)
+    subCategory = db.Column(db.String(50), unique=False, nullable=False)
+
+    idUser = db.Column(db.Integer, db.ForeignKey('user.id'))
+    usuario = db.relationship('User', back_populates='procedimientos')
+
+    def __repr__(self):
+        return f'<Procedimientos {self.name}>'
+      
+    def serialize(self):
+        serialized_data = {
+            "id": self.id,
+            "photo": self.photo,
+            "name": self.name,
+            "descripcion": self.descripcion,
+            "video": self.video,
+            "link": self.link,
+            "is_active": self.is_active,
+            "category": self.category,
+            "subCategory": self.subCategory
+        }
+
+        if self.archive:
+            serialized_data['archive'] = True
+
+        return serialized_data
+
 class Usuario (db.Model):
     __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,31 +118,3 @@ class Catalogo(db.Model):
             "image": self.image
         }
     
-class Procedimientos(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    photo = db.Column(db.Text, unique=False, nullable=True)
-    name = db.Column(db.String(80), unique=False, nullable=False)
-    descripcion = db.Column(db.String(500), unique=False, nullable=False)
-    video = db.Column(db.Text, unique=False, nullable=True)
-    link = db.Column(db.Text, unique=False, nullable=True)
-    archive = db.Column(db.LargeBinary, unique=False, nullable=True)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'<Procedimientos {self.name}>'
-      
-    def serialize(self):
-        serialized_data = {
-            "id": self.id,
-            "photo": self.photo,
-            "name": self.name,
-            "descripcion": self.descripcion,
-            "video": self.video,
-            "link": self.link,
-            "is_active": self.is_active
-        }
-
-        if self.archive:
-            serialized_data['archive'] = True
-
-        return serialized_data

@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			rol: "",
 			token: "",
+			id: -1,
 			usuario: [],
 			procedimientos: [],
 			catalogo: [],
@@ -39,7 +40,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						if (response.status == 200) {
 							const res = await response.json();
 							const decoded = jwtDecode(res.token);
-							setStore({ auth: true, rol: decoded.rol, token: res.token })
+							setStore({ auth: true, rol: decoded.rol, token: res.token, id: decoded.sub })
 							return res;
 						}
 
