@@ -71,7 +71,10 @@ def post_login():
     user = User.query.filter_by(email=email, password=password).first()
 
     if user is None:
-        return jsonify({"msg": "Bad username or password"}), 401
+        return jsonify({"msg": "Usuario o contraseña incorrecta"}), 404
+    
+    if user.rol != "Administrador" and user.is_active == False:
+        return jsonify({"msg": "Usuario inactivado por Administrador"}), 401
 
     access_token = create_access_token(identity=user.id, additional_claims={"rol": user.rol})
     return jsonify({ "token": access_token, "user_id": user.id })
@@ -203,6 +206,7 @@ def get_procedimientos():
     return jsonify(procedimientos_seriallize), 200
 
 @api.route('/procedimientos', methods=['POST'])
+@jwt_required()
 def post_procedimientos():
     body = request.form
     print(body)
@@ -243,6 +247,7 @@ def descargar_archivo(procedimiento_id):
 
 
 @api.route('/procedimientos/<int:id>', methods=['PUT'])
+@jwt_required()
 def put_procedimientos(id):
     procedimientos = Procedimientos.query.get(id)
     body = request.json
@@ -270,6 +275,7 @@ def put_procedimientos(id):
     return jsonify({"message": "Procedimiento modificado con éxito"}), 200
 
 @api.route('/procedimientos/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_procedimientos(id):
 
     procedimientos = Procedimientos.query.get(id)

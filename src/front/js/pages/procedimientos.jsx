@@ -53,7 +53,11 @@ export const Procedimientos = () => {
               </tr>
             </thead>
             <tbody>
-              {store.procedimientos.map((item) => (
+              {store.procedimientos
+              .filter((item) => {
+                return store.rol === "Enfermero" ? item.idUser === store.id : true;
+              })
+              .map((item) => (
                 <tr key={item.id}>
                   <td className="align-middle">
                     <img src={item.photo} style={{height:'100px', width:'auto'}} alt="N/A" />
@@ -65,12 +69,12 @@ export const Procedimientos = () => {
                   <td className="align-middle">{item.video}</td>
                   <td className="align-middle">
                     <Link to={`/modificar_procedimientos/${item.id}`}>
-                      <button className=" mx-1 btn btn-primary">Modificar</button>
+                      <button className=" m-1 btn"><i class="fa-solid fa-pen"></i></button>
                     </Link>
                     {item.archive && (
-                      <button onClick={() => descargarArchivo(item.id)} className="mx-1 btn btn-warning">Descargar Archivo</button>
+                      <button onClick={() => descargarArchivo(item.id)} className="m-1 btn"><i class="fa-solid fa-download"></i></button>
                     )}
-                    <button onClick={() => { setNameToDelete(item.name); setidToDelete(item.id) }} className="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</button>
+                    <button onClick={() => { setNameToDelete(item.name); setidToDelete(item.id) }} className="btn m-1" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-trash"></i></button>
                   </td>
                 </tr>
               ))}

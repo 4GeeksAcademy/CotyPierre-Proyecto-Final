@@ -69,7 +69,8 @@ class Procedimientos(db.Model):
             "link": self.link,
             "is_active": self.is_active,
             "category": self.category,
-            "subCategory": self.subCategory
+            "subCategory": self.subCategory,
+            "idUser": self.idUser
         }
 
         if self.archive:

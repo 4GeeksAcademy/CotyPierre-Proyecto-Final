@@ -37,18 +37,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 				})
 					.then(async (response) => {
+						const res = await response.json();
 						if (response.status == 200) {
-							const res = await response.json();
 							const decoded = jwtDecode(res.token);
 							setStore({ auth: true, rol: decoded.rol, token: res.token, id: decoded.sub })
 							return res;
-						}
-
-						if (response.status == 401) {
-							alert("Credenciales incorrectas");
+						}else{
+							alert(res.msg);
 							return;
 						}
-
 					})
 					.then((data) => {
 						localStorage.setItem("token", data.token);
@@ -145,13 +142,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					},
 					body: JSON.stringify(obj)
 				})
-
-				if (response.status != 200) {
-					return 1;
-				}
-
-				const body = await response.json();
-				return body;
+				
+				return response.status != 200 ? false : await response.json();
 			},
 
 			deleteUsuario: async (id) => {
@@ -175,8 +167,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getProcedimientos: async () => {
+				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos', {
 
-				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos')
+				});
 				const body = await response.json();
 				setStore({ procedimientos: body })
 				//console.log(categorias)
@@ -184,18 +177,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			crear_procedimientos: async (formData) => {
+				const store = getStore();
 				const response = await fetch(process.env.BACKEND_URL + "api/procedimientos", {
 					method: 'POST',
 					body: formData,
-				  });
+					headers: {
+						Authorization: `Bearer ${store.token}`
+					}
+				});
 				return response.status != 200 ? false : await response.json();
 			},
 
 			modificar_procedimientos: async (id, obj) => {
+				const store = getStore();
+
 				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos/' + id, {
 					method: 'PUT',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${store.token}`
 					},
 					body: JSON.stringify(obj)
 				});
@@ -204,16 +204,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			delete_procedimiento: async (id) => {
+				const store = getStore();
+
 				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos/' + id, {
 					method: 'DELETE',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${store.token}`
 					},
 				});
 				return response.status != 200 ? false : await response.json();
 			},
 
-			apiDownloadArchivo: (id) =>{
+			apiDownloadArchivo: (id) => {
 				return process.env.BACKEND_URL + `api/procedimientos/${id}/descargar`;
 			},
 

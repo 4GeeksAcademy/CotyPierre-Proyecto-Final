@@ -61,10 +61,8 @@ export const Crear_procedimientos = () => {
         formData.append('idUser', store.id);
 
         const res = await actions.crear_procedimientos(formData);
-        if (res && store.rol == "Administrador") {
+        if (res) {
             navigate('/procedimientos');
-        } else if (res && store.rol != "Administrador") {
-            navigate('/');
         } else {
             alert("Error al insertar el procedimiento");
         }

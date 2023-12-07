@@ -1,10 +1,12 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { Context } from "../store/appContext";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 
 export const Modificar_usuario = () => {
     const { theid } = useParams();
     const { store, actions } = useContext(Context);
+
+    const navigate = useNavigate();
 
     const usuario = store.usuario.find(usuario => usuario.id == theid);
 
@@ -59,7 +61,12 @@ export const Modificar_usuario = () => {
         };
 
         const res = await actions.putUsuario(theid, objeto);
-        console.log(res);
+        debugger;
+        if(res){
+            navigate('/usuario');
+        }else{
+            alert("Error al actualizar usuario");
+        }
         ;
     }
 

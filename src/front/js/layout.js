@@ -16,6 +16,7 @@ import { Crear_catalogo } from "./pages/crear_catalogo.jsx";
 import { Modificar_catalogo } from "./pages/modificar_catalogo.jsx";
 
 import { Procedimientos } from "./pages/procedimientos.jsx";
+import { ListaProcedimiento } from "./pages/lista_procedimiento.jsx";
 import { Crear_procedimientos } from "./pages/crear_procedimientos.jsx";
 import { Modificar_procedimientos } from "./pages/modificar_procedimientos.jsx";
 
@@ -28,6 +29,7 @@ import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import { VerProcedimiento } from "./pages/ver_procedimiento.jsx";
 
 //create your first component
 const Layout = () => {
@@ -50,6 +52,8 @@ const Layout = () => {
                     <Route element={<Modificar_procedimientos />} path="/modificar_procedimientos/:theid" />
                     <Route element={<Crear_procedimientos />} path="/crear_procedimientos" />
                     <Route element={<Procedimientos />} path="/procedimientos" />
+                    <Route element={<ListaProcedimiento />} path="/procedimiento/:theid" />
+                    <Route element={<VerProcedimiento />} path="/ver_procedimiento/:theid" />
                     <Route element={<Modificar_catalogo />} path="/modificar_catalogo/:theid" />
                     <Route element={<Crear_catalogo />} path="/crear_catalogo" />
                     <Route element={<Catalogo />} path="/catalogo" />
