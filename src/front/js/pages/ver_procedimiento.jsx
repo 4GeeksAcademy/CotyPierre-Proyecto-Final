@@ -20,6 +20,7 @@ export const VerProcedimiento = () => {
     const [archivo, setArchivo] = useState(null);
     const [category, setCategory] = useState("");
     const [subCategory, setSubcategory] = useState("");
+    const [idUser, setIdUser] = useState(-1);
 
     const descargarArchivo = async (id) => {
         const nuevaVentana = window.open(actions.apiDownloadArchivo(id));
@@ -35,20 +36,22 @@ export const VerProcedimiento = () => {
         setCategory(findProc.category);
         setSubcategory(findProc.subCategory);
         setArchivo(findProc.archive);
+        setIdUser(findProc.idUser);
     }, []);
 
     return (
         <div className="container d-flex gap-3 flex-wrap justify-content-center py-2 w-100">
             <h1 className="display-3">{name}</h1>
             <div className="row w-100">
-                <div className="col-md-4 col-sm-12 my-1">
+                <div className="col-md-5 col-sm-12 my-1">
                     <img className="rounded" style={{ maxWidth: "100%", height: "auto" }} src={photo} alt="" />
                 </div>
-                <div className="col-md-8 col-sm-12 my-1">
+                <div className="col-md-7 col-sm-12 my-1 d-flex flex-column justify-content-center">
                     <h3>{category}</h3>
                     <h4>{subCategory}</h4>
+                    <Link to={`/ver_contacto/${idUser}`}>Ver Información de Enfermero</Link>
                     <hr />
-                    <p>{descripcion}</p>
+                    <p className="overflow-auto">{descripcion}</p>
                     {enlace != null && enlace != "" && (
                         <a href={enlace}>Enlace del procedimiento</a>
                     )}

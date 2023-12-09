@@ -30,6 +30,8 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { VerProcedimiento } from "./pages/ver_procedimiento.jsx";
+import { Contactos } from "./pages/contactos.jsx";
+import { VerContacto } from "./pages/ver_contacto.jsx";
 
 //create your first component
 const Layout = () => {
@@ -57,6 +59,8 @@ const Layout = () => {
                     <Route element={<Modificar_catalogo />} path="/modificar_catalogo/:theid" />
                     <Route element={<Crear_catalogo />} path="/crear_catalogo" />
                     <Route element={<Catalogo />} path="/catalogo" />
+                    <Route element={<Contactos />} path="/contactos" />
+                    <Route element={<VerContacto />} path="/ver_contacto/:theid" />
                     <Route element={<Home />} path="/" />
                     <Route element={<Demo />} path="/demo" />
                     <Route element={<Single />} path="/single/:theid" />

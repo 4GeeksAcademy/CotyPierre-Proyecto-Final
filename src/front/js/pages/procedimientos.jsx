@@ -65,7 +65,7 @@ export const Procedimientos = () => {
                   <td className="align-middle">{item.name}</td>
                   <td className="align-middle">{item.category}</td>
                   <td className="align-middle">{item.subCategory}</td>
-                  <td className="align-middle">{item.descripcion}</td>
+                  <td className="align-middle text-truncate" style={{maxWidth:"400px"}}>{item.descripcion}</td>
                   <td className="align-middle">{item.video}</td>
                   <td className="align-middle">
                     <Link to={`/modificar_procedimientos/${item.id}`}>

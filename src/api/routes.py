@@ -81,10 +81,8 @@ def post_login():
 
 
 @api.route('/usuario', methods=['GET'])
-@jwt_required()
 def get_usuario():
     all_usuario = User.query.all()
-    print(all_usuario)
     Usuario_seriallize = list (map(lambda user: user.serialize(),all_usuario))
 
     return jsonify(Usuario_seriallize), 200
