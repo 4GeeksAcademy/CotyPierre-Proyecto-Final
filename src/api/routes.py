@@ -1,7 +1,8 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, send_file, make_response, Blueprint
+from sqlalchemy.exc import IntegrityError
 from api.models import db, User, Catalogo, Procedimientos, Usuario
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -9,6 +10,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+import io
 import base64
 
 api = Blueprint('api', __name__)
@@ -34,12 +36,6 @@ def post_register():
     if user:
         return jsonify({"msg": "Usuario ya existe"}), 401
 
-    if 'photo' in body: 
-        try:
-            photo_data = base64.b64decode(body['photo'])
-        except:
-            return jsonify({"msg": "Imagen inválida, intente nuevamente"}), 500
-
     new_user = User(
         email=body['email'],
         password=body["password"],
@@ -48,15 +44,21 @@ def post_register():
         adress=body.get('address'),
         country=body.get('country'),
         department=body.get('department'),
-        photo=photo_data,
+        photo=body['photo'],
         rol=body.get('rol'),
         professional_grade=body.get('professionalGrade'),
         workplace=body.get('workplace'),
         is_active=True
     )
 
-    db.session.add(new_user)
-    db.session.commit()
+    try: 
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"msg": "Usuario creado"}), 200  
+    except IntegrityError as e:
+        db.session.rollback() 
+        return jsonify({"msg": "Error: Violación de unicidad en la base de datos"}), 500
+
  
     return jsonify({"msg": "Usuario creado"}), 200
 
@@ -69,7 +71,10 @@ def post_login():
     user = User.query.filter_by(email=email, password=password).first()
 
     if user is None:
-        return jsonify({"msg": "Bad username or password"}), 401
+        return jsonify({"msg": "Usuario o contraseña incorrecta"}), 404
+    
+    if user.rol != "Administrador" and user.is_active == False:
+        return jsonify({"msg": "Usuario inactivado por Administrador"}), 401
 
     access_token = create_access_token(identity=user.id, additional_claims={"rol": user.rol})
     return jsonify({ "token": access_token, "user_id": user.id })
@@ -77,25 +82,28 @@ def post_login():
 
 @api.route('/usuario', methods=['GET'])
 def get_usuario():
-    all_usuario = Usuario.query.all()
-    Usuario_seriallize = list (map(lambda usuario: usuario.serialize(),all_usuario))
+    all_usuario = User.query.all()
+    Usuario_seriallize = list (map(lambda user: user.serialize(),all_usuario))
 
     return jsonify(Usuario_seriallize), 200
 
 @api.route('/usuario/<int:id>', methods=['PUT'])
 def put_usuario(id):
-    usuario = Usuario.query.get(id)
+    usuario = User.query.get(id)
     body = request.json
 
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
     
-    usuario.name = body["name"]
-    usuario.degree = body["degree"]
-    usuario.description = body["description"]
-    usuario.url_img = body["url_img"]
-    usuario.idu_img = body["idu_img"]
-    usuario.num_contact = body["num_contact"]
+    usuario.name = body.get('name')
+    usuario.phone = body.get('phone')
+    usuario.adress = body.get('adress')
+    usuario.country = body.get('country')
+    usuario.department = body.get('department')
+    usuario.photo = body['photo']
+    usuario.professional_grade = body.get('professional_grade')
+    usuario.workplace = body.get('workplace')
+    usuario.is_active = body.get('is_active')
     
     db.session.commit()
 
@@ -127,7 +135,7 @@ def post_usuario():
 @api.route('/usuario/<int:id>', methods=['DELETE'])
 def delete_usuario(id):
 
-    usuario = Usuario.query.get(id)
+    usuario = User.query.get(id)
 
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
@@ -196,16 +204,48 @@ def get_procedimientos():
     return jsonify(procedimientos_seriallize), 200
 
 @api.route('/procedimientos', methods=['POST'])
+@jwt_required()
 def post_procedimientos():
+    body = request.form
+    print(body)
 
-    body = request.json
-    new_procedimientos = Procedimientos(name=body['name'],image=body["image"],descripcion=body["descripcion"],articulos=body["articulos"],video=body["video"],)
+    new_procedimientos = Procedimientos(
+        name=body['name'],
+        photo=body["photo"],
+        descripcion=body["descripcion"],
+        video=body["video"],
+        link=body["enlace"],
+        is_active=True,
+        category=body["category"],
+        subCategory=body["subCategory"],
+        idUser=body["idUser"]
+    )
+
+    if 'archivo' in request.files:
+        archivo = request.files['archivo']
+        
+        if archivo:
+            new_procedimientos.archive = archivo.read()
+
     db.session.add(new_procedimientos)
     db.session.commit()
 
     return jsonify({"message": "Procedimiento creado con éxito"}), 200
 
+@api.route('/procedimientos/<int:procedimiento_id>/descargar', methods=['GET'])
+def descargar_archivo(procedimiento_id):
+    procedimiento = Procedimientos.query.get(procedimiento_id)
+    if procedimiento and procedimiento.archive:
+        archivo = io.BytesIO(procedimiento.archive)
+        response = make_response(archivo.getvalue())
+        response.headers['Content-Type'] = 'application/octet-stream'
+        response.headers['Content-Disposition'] = f'attachment; filename={procedimiento.name}.pdf'
+        return response
+    return jsonify({"message": "Procedimiento o archivo no encontrado"}), 404
+
+
 @api.route('/procedimientos/<int:id>', methods=['PUT'])
+@jwt_required()
 def put_procedimientos(id):
     procedimientos = Procedimientos.query.get(id)
     body = request.json
@@ -215,23 +255,28 @@ def put_procedimientos(id):
     
     if "name" in body:
         procedimientos.name = body['name']
-    if "image" in body:
-        procedimientos.image = body['image']
+    if "photo" in body:
+        procedimientos.photo = body['photo']
     if "descripcion" in body:
         procedimientos.descripcion = body['descripcion']
-    if "articulos" in body:
-        procedimientos.articulos = body['articulos']
+    if "enlace" in body:
+        procedimientos.link = body['enlace']
     if "video" in body:
         procedimientos.video = body['video']
+    if "category" in body:
+        procedimientos.category = body['category']
+    if "subCategory" in body:
+        procedimientos.subCategory = body['subCategory']
     
     db.session.commit()
 
     return jsonify({"message": "Procedimiento modificado con éxito"}), 200
 
 @api.route('/procedimientos/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_procedimientos(id):
 
-    procedimientos = procedimientos.query.get(id)
+    procedimientos = Procedimientos.query.get(id)
 
     if not procedimientos:
         return jsonify({"message": "Procedimientos no encontrado"}), 404

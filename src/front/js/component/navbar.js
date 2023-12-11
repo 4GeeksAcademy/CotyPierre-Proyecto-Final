@@ -8,10 +8,10 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-primary px-2">
 			{store.rol != "" && (
-				<Link to={"/"} className="navbar-brand">{store.rol}</Link>
+				<Link to={"/"} className="navbar-brand"><i class="fa-solid fa-user-tie"></i> {store.rol}</Link>
 			)}
 			{store.rol === "" && (
-				<Link to={"/"} className="navbar-brand">Publicación de Procedimientos</Link>
+				<Link to={"/"} className="navbar-brand"><i class="fa-solid fa-book"></i> Publicación de Procedimientos</Link>
 			)}
 
 			<a className="navbar-brand" href="#"></a>
@@ -21,22 +21,27 @@ export const Navbar = () => {
 			<div className="collapse navbar-collapse" id="navbarNavDropdown">
 				<ul className="navbar-nav">
 					<li className="nav-item active">
-						<Link className="nav-link" to={"/"}>Inicio</Link>
+						<Link className="nav-link" to={"/"}><i class="fa-solid fa-house"></i> Inicio</Link>
 					</li>
 					<li className="nav-item">
-						<a className="nav-link" href="#">Contactos</a>
+						<Link className="nav-link" to={"/contactos"}><i class="fa-solid fa-address-book"></i> Contactos</Link>
 					</li>
 					<li className="nav-item">
-						<Link className="nav-link" to={"/user_login"}>Login</Link>
+						<Link className="nav-link" to={"/user_login"}><i class="fa-solid fa-right-to-bracket"></i> Login</Link>
 					</li>
 					{store.rol === "Administrador" && (
 						<li className="nav-item">
-							<Link className="nav-link" to={"/user_login"}>Gestionar Procedimientos</Link>
+							<Link className="nav-link" to={"/procedimientos"}><i class="fa-solid fa-list"></i> Gestionar Procedimientos</Link>
 						</li>
 					)}
 					{store.rol === "Administrador" && (
 						<li className="nav-item">
-							<Link className="nav-link" to={"/user_login"}>Gestionar Usuarios</Link>
+							<Link className="nav-link" to={"/usuario"}><i class="fa-solid fa-users"></i> Gestionar Usuarios</Link>
+						</li>
+					)}
+					{store.rol === "Enfermero" && (
+						<li className="nav-item">
+							<Link className="nav-link" to={"/procedimientos"}><i class="fa-solid fa-newspaper"></i> Mis Procedimientos</Link>
 						</li>
 					)}
 				</ul>

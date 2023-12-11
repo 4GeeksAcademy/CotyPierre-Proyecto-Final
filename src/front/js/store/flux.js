@@ -5,6 +5,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			auth: false,
 			rol: "",
+			token: "",
+			id: -1,
 			usuario: [],
 			procedimientos: [],
 			catalogo: [],
@@ -23,47 +25,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 			]
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-
-			postUser: (email,password) => {
+			postUser: (email, password) => {
 				fetch(process.env.BACKEND_URL + "api/login", {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						email : email,
+						email: email,
 						password: password
 					})
 				})
-				.then(async(response)=> {
-					if (response.status == 200){						
+					.then(async (response) => {
 						const res = await response.json();
-						console.log(res);
-
-						const decoded = jwtDecode(res.token);
-
-						setStore({ auth : true, rol: decoded.rol})
-						const store = getStore();
-						console.log(store);
-
-						return res;
-					}
-
-					if (response.status == 401){
-						alert("Credenciales incorrectas");
-						return;
-					}
-
-				})
-				.then((data)=> {
-					localStorage.setItem("token",data.token);
-					localStorage.setItem("id",data.user_id);
-				}).catch(err => {
-					console.log(err);
-				})
+						if (response.status == 200) {
+							const decoded = jwtDecode(res.token);
+							setStore({ auth: true, rol: decoded.rol, token: res.token, id: decoded.sub })
+							return res;
+						}else{
+							alert(res.msg);
+							return;
+						}
+					})
+					.then((data) => {
+						localStorage.setItem("token", data.token);
+						localStorage.setItem("id", data.user_id);
+					}).catch(err => {
+						console.log(err);
+					})
 			},
-			postRegister: (
+			postRegister: async (
 				name,
 				phone,
 				address,
@@ -75,133 +66,170 @@ const getState = ({ getStore, getActions, setStore }) => {
 				workplace,
 				email,
 				password
-			  ) => {
+			) => {
 				const requestBody = {
-				  name: name,
-				  phone: phone,
-				  address: address,
-				  country: country,
-				  department: department,
-				  photo: photo,
-				  rol: rol,
-				  professionalGrade: professionalGrade,
-				  workplace: workplace,
-				  email: email,
-				  password: password
+					name: name,
+					phone: phone,
+					address: address,
+					country: country,
+					department: department,
+					photo: photo,
+					rol: rol,
+					professionalGrade: professionalGrade,
+					workplace: workplace,
+					email: email,
+					password: password
 				};
-			  
-				fetch(process.env.BACKEND_URL + "api/register", {
-				  method: 'POST',
-				  headers: {
-					'Content-Type': 'application/json'
-				  },
-				  body: JSON.stringify(requestBody)
+
+				const response = await fetch(process.env.BACKEND_URL + "api/register", {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(requestBody)
 				})
-				.then((response)=> response.json())
-				.then((data)=> {
-					if(data.msg == "Usuario creado"){
-						alert("Usuario creado");
-						window.location.href = "/user_login"
-					}else{
-						alert(`Error al crear el usuario ${email}`);
-					}
-				})
-			  },		  
-			
-		getUsuario: async() => {
-				const response = await fetch(process.env.BACKEND_URL + 'api/usuario')
-				const body = await response.json();
-				setStore({usuario: body})
-			},
 
-		postUsuario : (obj) => {
-			fetch(process.env.BACKEND_URL + 'api/usuario', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(obj)
-			})
-			.then((response)=> response.json())
-			.then((data)=> console.log(data))
-		},
-
-		putUsuario : (id,obj) => {
-			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(obj)
-			})
-			.then((response)=>response.json())
-			.then((data)=> console.log(data));
-		},
-
-		deleteUsuario : (id) => {
-			fetch(process.env.BACKEND_URL + 'api/usuario/'+id, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json'
+				if (response.status == 500) {
+					const body = await response.json();
+					return body.msg;
 				}
-			})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-		},
 
-			getProcedimientos: async() => {
-				
-				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos')
 				const body = await response.json();
-				setStore({procedimientos: body})
-				//console.log(categorias)
-
+				return body.msg == "Usuario creado";
 			},
 
-			crear_procedimientos : (obj) => {
-				fetch(process.env.BACKEND_URL + "api/procedimientos", {
+			getUsuario: async () => {
+				const store = getStore();
+				const token = store.token;
+				const requestOptions = {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`
+					}
+				};
+
+				try {
+					const response = await fetch(process.env.BACKEND_URL + 'api/usuario', requestOptions);
+					if (!response.ok) {
+						throw new Error('Error al obtener los usuarios');
+					}
+					const body = await response.json();
+					console.log(body);
+					setStore({ usuario: body });
+				} catch (error) {
+					console.error(error);
+				}
+			},
+
+			postUsuario: (obj) => {
+				fetch(process.env.BACKEND_URL + 'api/usuario', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify(obj)
 				})
-				.then((response)=> response.json())
-				.then((data)=> console.log(data))
+					.then((response) => response.json())
+					.then((data) => console.log(data))
 			},
 
-			modificar_procedimientos : (id,obj) => {
-				fetch(process.env.BACKEND_URL + 'api/procedimientos'+id, {
+			putUsuario: async (id, obj) => {
+				const response = await fetch(process.env.BACKEND_URL + 'api/usuario/' + id, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify(obj)
 				})
-				.then((response)=>response.json())
-				.then((data)=> console.log(data));
-			},
-
-			delete : (id) => {
-				fetch(process.env.BACKEND_URL + 'api/procedimientos'+id, {
-					method: 'DELETE',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				}).then((response) => response.json())
-				.then((data) => console.log(data))
-			},
-
-			getCatalogo: async() => {
 				
-				const response = await fetch(process.env.BACKEND_URL + 'api/catalogo')
+				return response.status != 200 ? false : await response.json();
+			},
+
+			deleteUsuario: async (id) => {
+				const store = getStore();
+				const decoded = jwtDecode(store.token);
+
+				if (decoded.sub != id) {
+					const response = await fetch(process.env.BACKEND_URL + 'api/usuario/' + id, {
+						method: 'DELETE',
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+					const body = await response.json();
+					return body.message == "Usuario eliminado con éxito";
+				} else {
+					return false;
+				}
+
+
+			},
+
+			getProcedimientos: async () => {
+				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos', {
+
+				});
 				const body = await response.json();
-				setStore({catalogo: body})
+				setStore({ procedimientos: body })
 				//console.log(categorias)
 
 			},
 
-			crear_catalogo : (obj) => {
+			crear_procedimientos: async (formData) => {
+				const store = getStore();
+				const response = await fetch(process.env.BACKEND_URL + "api/procedimientos", {
+					method: 'POST',
+					body: formData,
+					headers: {
+						Authorization: `Bearer ${store.token}`
+					}
+				});
+				return response.status != 200 ? false : await response.json();
+			},
+
+			modificar_procedimientos: async (id, obj) => {
+				const store = getStore();
+
+				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos/' + id, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${store.token}`
+					},
+					body: JSON.stringify(obj)
+				});
+
+				return response.status != 200 ? false : await response.json();
+			},
+
+			delete_procedimiento: async (id) => {
+				const store = getStore();
+
+				const response = await fetch(process.env.BACKEND_URL + 'api/procedimientos/' + id, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${store.token}`
+					},
+				});
+				return response.status != 200 ? false : await response.json();
+			},
+
+			apiDownloadArchivo: (id) => {
+				return process.env.BACKEND_URL + `api/procedimientos/${id}/descargar`;
+			},
+
+			getCatalogo: async () => {
+
+				const response = await fetch(process.env.BACKEND_URL + 'api/catalogo')
+				const body = await response.json();
+				setStore({ catalogo: body })
+				//console.log(categorias)
+
+			},
+
+			crear_catalogo: (obj) => {
 				fetch(process.env.BACKEND_URL + "api/catalogo", {
 					method: 'POST',
 					headers: {
@@ -209,30 +237,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 					},
 					body: JSON.stringify(obj)
 				})
-				.then((response)=> response.json())
-				.then((data)=> console.log(data))
+					.then((response) => response.json())
+					.then((data) => console.log(data))
 			},
 
-			modificar_catalogo : (id,obj) => {
-				fetch(process.env.BACKEND_URL + 'api/catalogo'+id, {
+			modificar_catalogo: (id, obj) => {
+				fetch(process.env.BACKEND_URL + 'api/catalogo' + id, {
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify(obj)
 				})
-				.then((response)=>response.json())
-				.then((data)=> console.log(data));
+					.then((response) => response.json())
+					.then((data) => console.log(data));
 			},
 
-			delete : (id) => {
-				fetch(process.env.BACKEND_URL + 'api/catalogo'+id, {
+			delete: (id) => {
+				fetch(process.env.BACKEND_URL + 'api/catalogo' + id, {
 					method: 'DELETE',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 				}).then((response) => response.json())
-				.then((data) => console.log(data))
+					.then((data) => console.log(data))
 			},
 
 			exampleFunction: () => {
@@ -240,14 +268,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getMessage: async () => {
-				try{
+				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
-				}catch(error){
+				} catch (error) {
 					console.log("Error loading message from backend", error)
 				}
 			},
