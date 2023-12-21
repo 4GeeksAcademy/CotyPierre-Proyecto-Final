@@ -44,7 +44,7 @@ export const VerContacto = () => {
             <h1 className="display-2 text-primary">{name}</h1>
             <div className="row w-100">
                 <div className="col-md-4 col-sm-12 my-1">
-                    <img className="rounded" style={{ maxWidth: "100%", height: "auto" }} src={photo} alt="" />
+                    <img className="rounded" style={{ maxWidth: "100%", height: "auto", width: "100%" }} src={photo} alt="" />
                 </div>
                 <div className="col-md-8 col-sm-12 my-1 d-flex flex-column justify-content-center">
                     <h6 className="display-5 text-primary">Grado Profesional</h6>

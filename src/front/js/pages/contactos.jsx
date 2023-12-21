@@ -17,7 +17,7 @@ export const Contactos = () => {
                 .filter((item) => item.rol == "Enfermero" && item.is_active)
                 .map((item) => (
                     <Link to={`/ver_contacto/${item.id}`} className="card p-0 m-0 text-dark text-center" style={{ width: '18rem', textDecoration: "none" }}>
-                        <img style={{ height: "15rem", width: "auto" }} className="card-img-top" src={item.photo} alt="Sin imagen del procedimiento" />
+                        <img style={{ height: "15rem", width: "auto" }} className="card-img-top img-card" src={item.photo} alt="Sin imagen del procedimiento" />
                         <div class="card-body d-flex flex-column justify-content-between">
                             <h4 class="card-title text-primary">{item.name}</h4>
                             <h5 class="card-title">{item.professional_grade}</h5>

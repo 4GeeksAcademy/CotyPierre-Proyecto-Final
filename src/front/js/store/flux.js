@@ -54,6 +54,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 						console.log(err);
 					})
 			},
+			resetUser: () => {
+				setStore({ auth: false, rol: "", token: "", id: -1 })
+			},
 			postRegister: async (
 				name,
 				phone,
@@ -292,6 +295,20 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+			getImagesHome: async (search) => {
+				try{
+					//API de terceros para consultar imagenes de enfermería
+					const url = `https://api.unsplash.com/search/photos?query=${search}&client_id=9WGUXXAL9igkhan6PAylO6h4diEupnQ3COyXQu-Aidg`;
+					const res = await fetch(url);
+					const data = await res.json();
+
+					return res.status != 200 ? false : data;
+
+
+				}catch(err){
+					console.log(err);
+				}
 			}
 		}
 	};

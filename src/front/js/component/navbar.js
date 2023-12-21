@@ -1,9 +1,16 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const Navbar = () => {
 	const { store, actions } = useContext(Context);
+
+	const navigate = useNavigate();
+
+	const logout = () => {
+		actions.resetUser();
+		navigate("/");
+	}
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-primary px-2">
@@ -26,9 +33,11 @@ export const Navbar = () => {
 					<li className="nav-item">
 						<Link className="nav-link" to={"/contactos"}><i class="fa-solid fa-address-book"></i> Contactos</Link>
 					</li>
+					{!store.auth && (
 					<li className="nav-item">
 						<Link className="nav-link" to={"/user_login"}><i class="fa-solid fa-right-to-bracket"></i> Login</Link>
 					</li>
+					)}
 					{store.rol === "Administrador" && (
 						<li className="nav-item">
 							<Link className="nav-link" to={"/procedimientos"}><i class="fa-solid fa-list"></i> Gestionar Procedimientos</Link>
@@ -42,6 +51,11 @@ export const Navbar = () => {
 					{store.rol === "Enfermero" && (
 						<li className="nav-item">
 							<Link className="nav-link" to={"/procedimientos"}><i class="fa-solid fa-newspaper"></i> Mis Procedimientos</Link>
+						</li>
+					)}
+					{store.auth && (
+						<li className="nav-item">
+							<button className="nav-link btn" onClick={ logout }><i class="fa-solid fa-power-off"></i> Logout</button>
 						</li>
 					)}
 				</ul>
